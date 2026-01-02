@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Routes, Route, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Session } from "@supabase/supabase-js";
-import { LayoutDashboard, Users, Briefcase, FileText, Mail, LogOut, Menu, X, Home, Newspaper } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, FileText, Mail, LogOut, Menu, X, Home, Newspaper, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -14,6 +14,7 @@ import AdminApplications from "@/components/admin/AdminApplications";
 import AdminContact from "@/components/admin/AdminContact";
 import AdminSiteContent from "@/components/admin/AdminSiteContent";
 import AdminSubscribers from "@/components/admin/AdminSubscribers";
+import AdminInvites from "@/components/admin/AdminInvites";
 
 const navItems = [
   { path: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -24,6 +25,7 @@ const navItems = [
   { path: "/admin/subscribers", label: "Newsletter", icon: Mail },
   { path: "/admin/applications", label: "Applications", icon: Briefcase },
   { path: "/admin/contact", label: "Contact", icon: FileText },
+  { path: "/admin/invites", label: "Admin Invites", icon: UserPlus },
 ];
 
 export default function Admin() {
@@ -152,6 +154,7 @@ export default function Admin() {
           <Route path="/subscribers" element={<AdminSubscribers />} />
           <Route path="/applications" element={<AdminApplications />} />
           <Route path="/contact" element={<AdminContact />} />
+          <Route path="/invites" element={<AdminInvites />} />
         </Routes>
       </main>
     </div>
