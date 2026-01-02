@@ -61,7 +61,15 @@ export default function AdminMemos() {
         if (error) throw error;
         toast.success("Memo updated");
       } else {
-        const { error } = await supabase.from("memos").insert([{ ...payload, verification_id: "temp" }]);
+        const { error } = await supabase.from("memos").insert({
+          title: formData.title,
+          content: formData.content,
+          author_name: formData.author_name,
+          category: formData.category || null,
+          visibility: formData.visibility,
+          is_pinned: formData.is_pinned,
+          verification_id: `CRVO-${new Date().getFullYear()}-0000`,
+        });
         if (error) throw error;
         toast.success("Memo created");
       }
