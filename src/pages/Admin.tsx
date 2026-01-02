@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Routes, Route, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Session } from "@supabase/supabase-js";
-import { LayoutDashboard, Users, Briefcase, FileText, Mail, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, FileText, Mail, LogOut, Menu, X, Home, Newspaper } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -12,14 +12,18 @@ import AdminJobs from "@/components/admin/AdminJobs";
 import AdminMemos from "@/components/admin/AdminMemos";
 import AdminApplications from "@/components/admin/AdminApplications";
 import AdminContact from "@/components/admin/AdminContact";
+import AdminSiteContent from "@/components/admin/AdminSiteContent";
+import AdminSubscribers from "@/components/admin/AdminSubscribers";
 
 const navItems = [
   { path: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { path: "/admin/site-content", label: "Home Page", icon: Home },
   { path: "/admin/team", label: "Team", icon: Users },
   { path: "/admin/jobs", label: "Jobs", icon: Briefcase },
-  { path: "/admin/memos", label: "Memos", icon: FileText },
+  { path: "/admin/memos", label: "News", icon: Newspaper },
+  { path: "/admin/subscribers", label: "Newsletter", icon: Mail },
   { path: "/admin/applications", label: "Applications", icon: Briefcase },
-  { path: "/admin/contact", label: "Contact", icon: Mail },
+  { path: "/admin/contact", label: "Contact", icon: FileText },
 ];
 
 export default function Admin() {
@@ -141,9 +145,11 @@ export default function Admin() {
       <main className="flex-1 p-6 lg:p-8 pt-16 lg:pt-8">
         <Routes>
           <Route path="/" element={<AdminDashboard />} />
+          <Route path="/site-content" element={<AdminSiteContent />} />
           <Route path="/team" element={<AdminTeam />} />
           <Route path="/jobs" element={<AdminJobs />} />
           <Route path="/memos" element={<AdminMemos />} />
+          <Route path="/subscribers" element={<AdminSubscribers />} />
           <Route path="/applications" element={<AdminApplications />} />
           <Route path="/contact" element={<AdminContact />} />
         </Routes>
