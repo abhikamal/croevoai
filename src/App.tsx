@@ -13,6 +13,7 @@ import Contact from "./pages/Contact";
 import Verify from "./pages/Verify";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
+import Invite from "./pages/Invite";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/verify" element={<Verify />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/invite/:token" element={<Invite />} />
           <Route path="/admin/*" element={<Admin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
