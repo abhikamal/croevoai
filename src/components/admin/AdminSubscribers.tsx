@@ -8,8 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Send, Users, Mail, Trash2, RefreshCw } from "lucide-react";
+import { Send, Users, Mail, Trash2, RefreshCw, Eye } from "lucide-react";
 import { format } from "date-fns";
 
 interface Subscriber {
@@ -35,7 +36,34 @@ export default function AdminSubscribers() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [newNewsletter, setNewNewsletter] = useState({ subject: "", content: "" });
+  const [previewNewsletter, setPreviewNewsletter] = useState<Newsletter | null>(null);
   const { toast } = useToast();
+
+  const generateEmailHtml = (subject: string, content: string) => `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${subject}</title>
+    </head>
+    <body style="font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #1a1a2e; margin: 0; padding: 0; background-color: #f5f7fa;">
+      <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+        <div style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 24px; font-weight: bold;">Croevo AI</h1>
+        </div>
+        <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <h2 style="color: #1a1a2e; margin-top: 0; font-size: 22px;">${subject}</h2>
+          <div style="color: #4a5568; font-size: 16px; white-space: pre-wrap;">${content}</div>
+          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;">
+          <p style="color: #718096; font-size: 14px; margin-bottom: 0;">
+            You received this email because you subscribed to Croevo AI updates.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
 
   useEffect(() => {
     fetchData();
@@ -223,7 +251,26 @@ export default function AdminSubscribers() {
                   rows={10}
                 />
               </div>
-              <Button onClick={handleCreateNewsletter}>Save as Draft</Button>
+              <div className="flex gap-2">
+                <Button onClick={handleCreateNewsletter}>Save as Draft</Button>
+                {newNewsletter.subject && newNewsletter.content && (
+                  <Button
+                    variant="outline"
+                    onClick={() => setPreviewNewsletter({ 
+                      id: "preview", 
+                      subject: newNewsletter.subject, 
+                      content: newNewsletter.content,
+                      status: "draft",
+                      sent_at: null,
+                      sent_count: 0,
+                      created_at: new Date().toISOString()
+                    })}
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Preview
+                  </Button>
+                )}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -261,6 +308,13 @@ export default function AdminSubscribers() {
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setPreviewNewsletter(newsletter)}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
                           {newsletter.status === "draft" && (
                             <Button
                               size="sm"
@@ -330,6 +384,41 @@ export default function AdminSubscribers() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Preview Dialog */}
+      <Dialog open={!!previewNewsletter} onOpenChange={() => setPreviewNewsletter(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Email Preview</DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 overflow-auto bg-muted rounded-lg p-4">
+            {previewNewsletter && (
+              <iframe
+                srcDoc={generateEmailHtml(previewNewsletter.subject, previewNewsletter.content)}
+                className="w-full h-[500px] bg-white rounded-lg border-0"
+                title="Newsletter Preview"
+              />
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPreviewNewsletter(null)}>
+              Close
+            </Button>
+            {previewNewsletter?.status === "draft" && previewNewsletter.id !== "preview" && (
+              <Button
+                onClick={() => {
+                  handleSendNewsletter(previewNewsletter);
+                  setPreviewNewsletter(null);
+                }}
+                disabled={sending}
+              >
+                <Send className="h-4 w-4 mr-2" />
+                Send Newsletter
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
